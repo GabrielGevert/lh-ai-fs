@@ -416,3 +416,101 @@ A bad hire at a startup is 10x more damaging than at a big company. It's always 
 ---
 
 *This guide is a living document. Update it as you learn what predicts success at your specific company.*
+
+---
+
+## Appendix B: Advanced Techniques from Research
+
+### The TORC Method (Threat of Reference Check)
+
+Tell candidates upfront at the start of the process:
+
+> *"As part of our process, we'll ask you to arrange reference calls with your former managers — not references you pick, but the actual managers you reported to."*
+
+**Why it works:** A-players welcome this because they have nothing to hide. B and C players often withdraw their candidacy or become visibly uncomfortable. This single technique, from the Topgrading methodology, has been shown to raise A-player hiring rates from ~26% to ~85% at companies like GE, Honeywell, and Barclays.
+
+### Paid Work Trials (The Gold Standard)
+
+The most predictive hiring signal is not the interview — it's watching someone do real work. 82% of companies using work sample assessments report improved quality of hires, and 89% report increased retention.
+
+**How leading startups do it:**
+
+| Company | Format | Result |
+|---|---|---|
+| **Linear** | Paid 2-5 day trial on real projects | 96% retention rate over 4 years |
+| **Automattic** | Multi-week paid contract with actual team | Industry-leading retention |
+| **Gumroad** | 4-6 week contract on "good for trialers" tasks | Consistent quality hires |
+| **Mogul** | Full day working at the company instead of final interview | Zero turnover for 3 years |
+
+**Suggested approach:** After the interview (if the candidate scores well), offer a paid half-day or full-day trial ($200-500) working on a real problem with the team. Evaluate how they communicate, ask questions, handle ambiguity, and deliver under realistic conditions.
+
+### The DICE Framework for Probing Questions
+
+When a candidate gives a surface-level answer, use these four probe types to go deeper:
+
+| Probe Type | Purpose | Example |
+|---|---|---|
+| **Descriptive Detail** | Get specifics about what happened | *"Walk me through exactly what you did that day"* |
+| **Idiographic Memory** | Access personal, emotional detail | *"What were you feeling when that happened?"* |
+| **Clarifying** | Resolve ambiguity or confusion | *"When you say 'we struggled,' what does that mean concretely?"* |
+| **Explanatory** | Understand reasoning and motivation | *"Why did you choose that path over the alternatives?"* |
+
+### Avoid the Negative Information Bias
+
+When candidates share failures transparently (which is exactly what you want), do **not** unconsciously give them lower ratings. Research shows interviewers often penalize candidates for the very honesty they're seeking. Candidates who are transparent about struggles demonstrate the self-awareness that correlates with true resilience and high performance.
+
+### Grit vs. Stubbornness — Know the Difference
+
+Based on Angela Duckworth's research, true grit is the combination of **passion** (long-term direction) and **perseverance** (stamina through setbacks). It is NOT blind stubbornness. The best candidates show **adaptability within their persistence** — they change tactics while keeping the goal fixed. If someone describes pushing through without ever adjusting their approach, that's a warning sign, not a strength.
+
+### The AI-Prepared Candidate Problem
+
+Generative AI now helps candidates generate personalized, role-specific answers to common interview questions. Your defense:
+- Go 3+ levels deep on every answer — AI-prepared answers break down under sustained probing
+- Ask for emotional and sensory details ("What were you feeling? What did the room look like?")
+- Use hypothetical variations ("What if [constraint] had been different?")
+- Watch for unnaturally polished answers that lack personal texture
+
+### The "Uncomfortable Number of Whys"
+
+From YC-affiliated hiring advice: Don't be afraid to ask "Why?" an uncomfortable number of times. A-players have substance at every level of depth. B-players give vague or contradictory answers after 2-3 levels of probing. The deeper you can go while the candidate maintains specificity and coherence, the stronger they are.
+
+### Post-Interview Decision Protocol
+
+1. All interviewers submit **independent scorecards** before any group discussion (prevents anchoring bias)
+2. Facilitator reviews for consistency and flags score discrepancies of 2+ points
+3. Group debrief discusses disagreements with **specific evidence from the interview**
+4. Final decision requires clear signal — lukewarm consensus ("everyone said 3.5") is a No Hire
+5. Document the decision rationale for calibration and future reference
+6. Track interviewer accuracy over time — compare their scores to actual on-the-job performance
+
+---
+
+## Appendix C: Sources & Further Reading
+
+### Startup Interview Best Practices
+- [Y Combinator: Interviewing at a Startup](https://www.ycombinator.com/library/F2-interviewing-at-a-startup)
+- [Gusto: Best Questions for a Startup Interview](https://gusto.com/resources/articles/hr/hiring/startup-interview-questions)
+- [Startups.com: 46 Startup Interview Questions](https://www.startups.com/articles/startup-interview-questions-to-ask)
+
+### Grit, Resilience & Relentlessness
+- Angela Duckworth — *Grit: The Power of Passion and Perseverance*
+- [Yardstick: Behavioral Questions for Grit](https://yardstick.team/interview-questions/grit)
+- [Yardstick: Behavioral Questions for Tenacity](https://yardstick.team/interview-questions/tenacity)
+
+### Top-Tier Talent Identification
+- Brad Smart & Geoff Smart — *Who: The A Method for Hiring* (ghSMART Scorecard)
+- [Alpine Investors: Scorecard to Find A-Player Talent](https://alpineinvestors.com/story/scorecard-a-player-talent/)
+- [Workable: What is Topgrading Interviewing](https://resources.workable.com/tutorial/topgrading-interviewing)
+
+### Work Trials
+- [Linear: Why and How We Do Work Trials](https://linear.app/now/why-and-how-we-do-work-trials-at-linear)
+- [Lenny's Newsletter: Adding a Work Trial](https://www.lennysnewsletter.com/p/adding-a-work-trial-to-your-interview)
+
+### Scoring & Evaluation
+- [Google re:Work: Structured Interviewing](https://rework.withgoogle.com/intl/en/guides/hiring-use-structured-interviewing)
+- [AIHR: What Is an Interview Scorecard](https://www.aihr.com/blog/interview-scorecard/)
+
+### Follow-Up Techniques
+- [MIT Sloan: When Candidates Use Generative AI](https://sloanreview.mit.edu/article/when-candidates-use-generative-ai-for-the-interview/)
+- [Fiveable: Probing and Follow-Up Questions](https://library.fiveable.me/art-of-the-interview/unit-3/probing-follow-up-questions/study-guide/pl1Ko96D6g02mrkl)
