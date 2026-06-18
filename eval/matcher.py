@@ -87,6 +87,32 @@ def _matches(detection: dict, flaw: dict) -> bool:
     return bool(flaw.get("keywords") or any_of)
 
 
+def judge_missed(report: dict, per_flaw: list[dict], ground_truth: dict, judge_fn) -> list[str]:
+    """Re-check keyword-missed flaws with an LLM judge for semantic matches.
+
+    judge_fn(prompt) -> str is injected so this module stays LLM-agnostic and
+    testable offline. Returns the ids of missed flaws the judge confirms as covered.
+    """
+    flaw_by_id = {f["id"]: f for f in ground_truth["flaws"]}
+    detections = detections_from_report(report)
+    numbered = "\n".join(f"{i + 1}. {d['text'][:300]}" for i, d in enumerate(detections))
+    upgraded: list[str] = []
+
+    for pf in per_flaw:
+        if pf["caught"]:
+            continue
+        flaw = flaw_by_id[pf["id"]]
+        prompt = (
+            "A verification pipeline flagged these findings about a legal motion:\n\n"
+            f"{numbered}\n\n"
+            f"Known flaw to check for: {flaw['desc']}\n\n"
+            'Did any finding above identify this specific flaw? Answer strictly "yes" or "no".'
+        )
+        if judge_fn(prompt).strip().lower().startswith("yes"):
+            upgraded.append(pf["id"])
+    return upgraded
+
+
 def evaluate(report: dict, ground_truth: dict, documents: dict[str, str]) -> dict:
     flaws = ground_truth["flaws"]
     detections = detections_from_report(report)

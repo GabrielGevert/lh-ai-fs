@@ -12,7 +12,7 @@ import json
 import sys
 from pathlib import Path
 
-from matcher import evaluate
+from matcher import evaluate, judge_missed
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DOCS_DIR = REPO_ROOT / "backend" / "documents"
@@ -37,6 +37,8 @@ def _print_report(results: dict) -> None:
     print(f"recall             {results['recall']:.0%}  ({results['caught']}/{results['total_flaws']} planted flaws caught)")
     print(f"precision          {results['precision']:.0%}  ({results['matched_detections']}/{results['total_detections']} detections were real)")
     print(f"hallucination rate {results['hallucination_rate']:.0%}  ({results['ungrounded_detections']}/{results['grounding_assessable']} quoted detections ungrounded)")
+    if "recall_with_judge" in results:
+        print(f"recall (w/ judge)  {results['recall_with_judge']:.0%}  (+{len(results['judge_upgraded'])} semantic matches: {', '.join(results['judge_upgraded']) or 'none'})")
 
     by_cat: dict[str, list] = {}
     for f in results["per_flaw"]:
@@ -54,6 +56,7 @@ def _print_report(results: dict) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser(description="Evaluate the BS Detector pipeline.")
     parser.add_argument("--report", help="Path to a saved report JSON; skips the live pipeline.")
+    parser.add_argument("--judge", action="store_true", help="Use an LLM judge to recheck keyword-missed flaws (needs OPENAI_API_KEY).")
     args = parser.parse_args()
 
     if args.report:
@@ -63,6 +66,14 @@ def main() -> None:
 
     ground_truth = json.loads(GROUND_TRUTH.read_text(encoding="utf-8"))
     results = evaluate(report, ground_truth, load_documents())
+
+    if args.judge:
+        sys.path.insert(0, str(REPO_ROOT / "backend"))
+        from llm import call_llm
+        upgraded = judge_missed(report, results["per_flaw"], ground_truth,
+                                lambda p: call_llm([{"role": "user", "content": p}]))
+        results["judge_upgraded"] = upgraded
+        results["recall_with_judge"] = round((results["caught"] + len(upgraded)) / results["total_flaws"], 3)
 
     RESULTS_OUT.write_text(json.dumps(results, indent=2), encoding="utf-8")
     _print_report(results)
