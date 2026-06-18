@@ -98,3 +98,36 @@ We are evaluating:
 5. How honest your reflection is
 
 Not lines of code.
+
+---
+
+## Solution Overview
+
+The pipeline runs five named agents, each with an explicit prompt, passing typed
+Pydantic objects (`backend/schemas.py`) between them rather than raw text:
+
+1. **CitationExtractor** (`backend/agents/citation_extractor.py`) extracts every citation, its proposition, and quotes.
+2. **AuthorityVerifier** (`backend/agents/authority_verifier.py`) judges existence, support, and quote accuracy.
+3. **FactConsistencyChecker** (`backend/agents/fact_checker.py`) checks the motion's facts against the record.
+4. **ConfidenceScorer** (`backend/agents/confidence_scorer.py`) consolidates everything into scored findings.
+5. **JudicialMemoAgent** (`backend/agents/judicial_memo.py`) writes the one-paragraph summary for the judge.
+
+`backend/orchestrator.py` runs them with per-agent error handling: if one agent fails,
+its error is recorded in the report's `errors` field and the rest continue. `POST /analyze`
+returns the full `VerificationReport`, which the UI renders.
+
+See [`REFLECTION.md`](REFLECTION.md) for design decisions and tradeoffs.
+
+## Running the Evals
+
+From the repo root, with the backend venv active and `OPENAI_API_KEY` set:
+
+```bash
+python eval/run_evals.py            # run the live pipeline and score it
+python eval/run_evals.py --judge    # also use an LLM judge for semantic recall
+python eval/run_evals.py --report path/to/report.json   # score a saved report, no API calls
+```
+
+It reports precision, recall, and hallucination rate against `eval/ground_truth.json`
+and writes `eval/results.json`. Recall is reported two ways: conservative keyword matching
+and an optional LLM judge for semantic matches. We report both rather than the flattering one.
