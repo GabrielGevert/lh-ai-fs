@@ -131,3 +131,11 @@ python eval/run_evals.py --report path/to/report.json   # score a saved report, 
 It reports precision, recall, and hallucination rate against `eval/ground_truth.json`
 and writes `eval/results.json`. Recall is reported two ways: conservative keyword matching
 and an optional LLM judge for semantic matches. We report both rather than the flattering one.
+
+## Running the Tests
+
+Unit tests cover the deterministic logic (eval matcher and schema validation) and need no API key:
+
+```bash
+pytest tests/
+```
