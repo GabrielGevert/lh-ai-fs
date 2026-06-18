@@ -8,9 +8,23 @@ from pydantic import BaseModel, ValidationError
 
 load_dotenv()
 
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-
 T = TypeVar("T", bound=BaseModel)
+
+_client: OpenAI | None = None
+
+
+def _get_client() -> OpenAI:
+    """Build the OpenAI client lazily.
+
+    Recent OpenAI SDKs raise on construction when no key is set, so creating the
+    client at import time would make this module unimportable without a key.
+    Building it on first use keeps the module importable for tests and lets the
+    key be required only when a call is actually made.
+    """
+    global _client
+    if _client is None:
+        _client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+    return _client
 
 
 def call_llm(
@@ -19,7 +33,7 @@ def call_llm(
     temperature: float = 0,
 ) -> str:
     """Call the OpenAI API and return the response content."""
-    response = client.chat.completions.create(
+    response = _get_client().chat.completions.create(
         model=model,
         messages=messages,
         temperature=temperature,
@@ -51,7 +65,7 @@ def call_llm_json(
 
     last_error: Exception | None = None
     for attempt in range(max_retries + 1):
-        response = client.chat.completions.create(
+        response = _get_client().chat.completions.create(
             model=model,
             messages=convo,
             temperature=temperature,
