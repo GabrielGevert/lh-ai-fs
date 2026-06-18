@@ -1,6 +1,10 @@
+from pathlib import Path
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from pathlib import Path
+
+from agents import authority_verifier, citation_extractor
+from schemas import VerificationReport
 
 app = FastAPI()
 
@@ -14,6 +18,8 @@ app.add_middleware(
 
 DOCUMENTS_DIR = Path(__file__).parent / "documents"
 
+CASE_NAME = "Rivera v. Harmon Construction Group"
+
 
 def load_documents() -> dict[str, str]:
     """Load all documents from the documents directory."""
@@ -24,7 +30,16 @@ def load_documents() -> dict[str, str]:
 
 
 @app.post("/analyze")
-async def analyze():
+async def analyze() -> VerificationReport:
     documents = load_documents()
-    # TODO: Build your multi-agent pipeline here
-    return {"report": None}
+    motion = documents["motion_for_summary_judgment"]
+
+    # Tier 1 pipeline: extract citations, then verify each one.
+    # Fact-checking, scoring, and the judicial memo are wired in later blocks.
+    citations = citation_extractor.run(motion)
+    verdicts = authority_verifier.run(citations)
+
+    return VerificationReport(
+        case=CASE_NAME,
+        citations=verdicts,
+    )
