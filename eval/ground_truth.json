@@ -1,0 +1,111 @@
+{
+  "case": "Rivera v. Harmon Construction Group",
+  "note": "Hand-built answer key of the flaws planted in the documents, derived by close reading. Keyword matching against it is intentionally conservative (see eval/matcher.py), so reported recall is a lower bound, not inflated.",
+  "flaws": [
+    {
+      "id": "A1",
+      "category": "citation",
+      "type": "misquote",
+      "severity": "high",
+      "keywords": ["privette"],
+      "any_of": ["never", "absolute", "overstat"],
+      "desc": "Privette is misquoted: 'a hirer is never liable' overstates a rebuttable presumption into an absolute rule."
+    },
+    {
+      "id": "A2",
+      "category": "citation",
+      "type": "fabricated_citation",
+      "severity": "high",
+      "any_of": ["whitmore", "delgado"],
+      "desc": "Whitmore v. Delgado Scaffolding Co. appears fabricated."
+    },
+    {
+      "id": "A3",
+      "category": "citation",
+      "type": "misrepresented_authority",
+      "severity": "high",
+      "any_of": ["kellerman", "pacific coast"],
+      "desc": "Kellerman is likely fabricated and states the law backwards: OSHA compliance does not create a presumption of due care."
+    },
+    {
+      "id": "A4",
+      "category": "citation",
+      "type": "misrepresented_authority",
+      "severity": "medium",
+      "any_of": ["seabright", "us airways"],
+      "desc": "Seabright is real but cited for a proposition it does not hold; it concerns delegation of Cal/OSHA duties under Privette."
+    },
+    {
+      "id": "A5",
+      "category": "citation",
+      "type": "fabricated_citation",
+      "severity": "medium",
+      "any_of": ["footnote", "torres", "blackwell", "dixon", "okafor", "nguyen", "reeves", "texas", "florida", "jurisdiction"],
+      "desc": "Footnote string cite of likely-fabricated cases; two (Dixon/TX, Okafor/FL) are out-of-jurisdiction and non-binding in California."
+    },
+    {
+      "id": "B1",
+      "category": "fact",
+      "type": "factual_contradiction",
+      "severity": "high",
+      "any_of": ["march 14"],
+      "desc": "Incident date: motion says March 14, 2021; police report, medical records, and witness statement all say March 12, 2021."
+    },
+    {
+      "id": "B2",
+      "category": "fact",
+      "type": "factual_contradiction",
+      "severity": "high",
+      "any_of": ["fall-arrest", "fall arrest", "harness", "protective equipment", "ppe"],
+      "desc": "Motion claims Rivera wore no PPE; the record says he wore a hard hat and harness and the anchor point failed."
+    },
+    {
+      "id": "B3",
+      "category": "fact",
+      "type": "misleading_argument",
+      "severity": "medium",
+      "any_of": ["statute of limitations", "time-barred", "time barred", "362", "335.1"],
+      "desc": "Statute-of-limitations argument rests on the wrong incident date and is misleading even on the correct date."
+    },
+    {
+      "id": "B4",
+      "category": "fact",
+      "type": "unsupported_claim",
+      "severity": "medium",
+      "any_of": ["inspection", "february 26", "passed all", "iipp"],
+      "desc": "Claim that Harmon passed all OSHA inspections is unsupported; the record notes a pending Cal/OSHA investigation."
+    },
+    {
+      "id": "C1",
+      "category": "legal",
+      "type": "legal_omission",
+      "severity": "medium",
+      "any_of": ["retained control", "hooker", "controlled the work", "donner directed", "exception to privette"],
+      "desc": "The Privette defense omits the retained-control exception (Hooker), triggered by Harmon's foreman directing the crew and dismissing safety concerns."
+    },
+    {
+      "id": "C2",
+      "category": "legal",
+      "type": "legal_omission",
+      "severity": "low",
+      "any_of": ["assumption of risk", "comparative"],
+      "desc": "Assumption of risk as a complete bar is largely superseded by comparative fault in California."
+    },
+    {
+      "id": "C3",
+      "category": "legal",
+      "type": "unsupported_claim",
+      "severity": "medium",
+      "any_of": ["no evidence to rebut", "presented no evidence", "raised concern", "notice", "rebut"],
+      "desc": "Claim that Rivera presented no evidence to rebut the OSHA presumption is contradicted by the witness statement: defects were reported to Ellison and Donner before the collapse."
+    },
+    {
+      "id": "D1",
+      "category": "fact",
+      "type": "unverifiable",
+      "severity": "low",
+      "any_of": ["eight years", "8 years", "years of experience"],
+      "desc": "The claim that Rivera has over eight years of experience is uncorroborated; a good pipeline expresses uncertainty rather than fabricating support."
+    }
+  ]
+}
