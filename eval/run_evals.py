@@ -25,22 +25,11 @@ def load_documents() -> dict[str, str]:
 
 
 def run_live_pipeline() -> dict:
-    # Imported lazily and assembled here for now; a later block routes this through
-    # the orchestrator so eval and the API share one pipeline definition.
+    # Eval and the API share the exact same pipeline via the orchestrator.
     sys.path.insert(0, str(REPO_ROOT / "backend"))
-    from agents import authority_verifier, citation_extractor, fact_checker
-    from schemas import VerificationReport
+    from orchestrator import run_pipeline
 
-    documents = load_documents()
-    citations = citation_extractor.run(documents["motion_for_summary_judgment"])
-    verdicts = authority_verifier.run(citations)
-    fact_findings = fact_checker.run(documents)
-    report = VerificationReport(
-        case="Rivera v. Harmon Construction Group",
-        citations=verdicts,
-        fact_findings=fact_findings,
-    )
-    return report.model_dump()
+    return run_pipeline(load_documents()).model_dump()
 
 
 def _print_report(results: dict) -> None:
