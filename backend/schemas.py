@@ -11,9 +11,22 @@ Each model maps to one stage of the pipeline:
     Orchestrator        -> VerificationReport
 """
 
-from typing import Literal
+from typing import Annotated, Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, BeforeValidator, Field
+
+_WORD_CONFIDENCE = {"very high": 0.95, "high": 0.9, "medium": 0.6, "moderate": 0.6, "low": 0.3, "very low": 0.1}
+
+
+def _coerce_confidence(value: object) -> object:
+    """Models sometimes return confidence as a word ('high') instead of a number.
+    Map known words to a score so one stray value cannot crash the pipeline."""
+    if isinstance(value, str):
+        return _WORD_CONFIDENCE.get(value.strip().lower(), value)
+    return value
+
+
+Confidence = Annotated[float, BeforeValidator(_coerce_confidence), Field(ge=0.0, le=1.0)]
 
 # Document keys, the stems of the .txt files under backend/documents/.
 SourceDoc = Literal[
@@ -58,7 +71,7 @@ class CitationVerdict(BaseModel):
     supports_proposition: Literal["yes", "no", "partial", "cannot_verify"]
     quote_accuracy: Literal["accurate", "altered", "not_in_source", "cannot_verify", "no_quote"]
     reasoning: str
-    confidence: float = Field(ge=0.0, le=1.0)
+    confidence: Confidence
 
 
 class FactFinding(BaseModel):
@@ -70,7 +83,7 @@ class FactFinding(BaseModel):
     source_documents: list[SourceDoc] = Field(default_factory=list)
     verdict: Literal["contradicted", "unsupported", "corroborated", "cannot_verify"]
     reasoning: str
-    confidence: float = Field(ge=0.0, le=1.0)
+    confidence: Confidence
 
 
 class Finding(BaseModel):
@@ -79,7 +92,7 @@ class Finding(BaseModel):
     id: str
     type: FindingType
     severity: Severity
-    confidence: float = Field(ge=0.0, le=1.0)
+    confidence: Confidence
     confidence_reasoning: str
     summary: str
     claim: str = Field(description="What the motion asserts.")
