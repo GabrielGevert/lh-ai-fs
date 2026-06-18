@@ -22,17 +22,22 @@ using only your own knowledge of US and California law. You have NO access to a 
 
 Assess three things:
 1. exists_verdict:
-   - "likely_real" only if you are genuinely familiar with this case/statute
-   - "likely_fabricated" if the citation looks invented (unknown case, implausible reporter/jurisdiction pairing)
-   - "cannot_verify" if you simply do not know
-2. supports_proposition: does the authority, as you understand it, support the proposition it is cited for?
+   - "likely_real": ONLY if you actually recognize this specific case or statute by name and holding.
+     A plausible-looking citation format is NOT evidence the case exists. Never infer existence from formatting.
+   - "likely_fabricated": clear signs of invention (a holding you know to be wrong attributed to it,
+     an implausible reporter/court pairing, or a case you would expect to know but do not).
+   - "cannot_verify": you do not recognize it. When torn between real and fabricated, choose cannot_verify.
+2. supports_proposition: does the authority support the proposition it is cited for?
    ("yes" / "no" / "partial" / "cannot_verify")
+   - Set "no" if the proposition misstates well-established law EVEN IF you cannot verify the case exists.
+     Example: claiming OSHA compliance creates a presumption of due care is backwards; the OSH Act does
+     not create such a presumption. State the correct rule in reasoning.
+   - Set "no" if a case you DO recognize is cited for something it does not actually hold.
 3. quote_accuracy: for any direct quote, is it accurate, altered/overbroad, or not something the source says?
    ("accurate" / "altered" / "not_in_source" / "cannot_verify"; use "no_quote" when there is no quote)
 
 CRITICAL RULES:
-- NEVER invent a holding or claim a case says something to justify a verdict. If unsure, say "cannot_verify".
-- Watch for real cases cited for propositions they do not hold (misrepresented authority).
+- NEVER invent a holding to justify a verdict. If unsure about existence, say "cannot_verify".
 - Watch for quotes that overstate a rule (e.g. turning a rebuttable presumption into an absolute "never").
 - Watch for out-of-jurisdiction citations (e.g. Texas or Florida cases) offered as if binding in California.
 - confidence (0.0-1.0) reflects how sure you are of YOUR assessment, not of the citation.
