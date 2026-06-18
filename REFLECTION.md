@@ -66,14 +66,29 @@ incomplete or biased; keyword matching can undercount; the judge adds variance.
 
 ## What it catches and what it misses
 
-Caught with high confidence: the wrong incident date (March 14 vs March 12), the false claim that
-Rivera wore no PPE, the unsupported OSHA-inspection claim, the Privette misquote, the out-of-jurisdiction
-footnote cases, and the misstated OSHA rule.
+Caught: the wrong incident date (March 14 vs March 12), the false no-PPE claim, the unsupported
+OSHA-inspection claim, the Privette misquote, the out-of-jurisdiction footnote cases, the misstated
+OSHA rule, and the Seabright cite. Seabright is a real case the model rates as only "partial" support;
+a calibration pass made the ConfidenceScorer turn partial support of a *recognized* case into a
+medium-confidence `misrepresented_authority` finding. That is a deliberate precision tradeoff: on this
+case the only "partial" cites are genuine problems, but on other cases a legitimately partial citation
+would become a false flag, which is why the finding carries only medium confidence.
 
-Missed: the Seabright cite (the model rates it "partial" rather than wrong, so it does not surface);
-the omitted retained-control exception to Privette and the dated assumption-of-risk defense (these are
-legal-reasoning gaps no current agent looks for); and the uncorroborated "eight years of experience"
-(genuinely unverifiable, where staying silent is the correct behavior).
+Genuinely hard to catch: the omitted retained-control exception to Privette and the superseded
+assumption-of-risk defense are legal-reasoning *omissions*, things the motion should have addressed but
+did not. Detecting an omission is harder than detecting a present error and needs a dedicated
+legal-analysis agent I did not build. The uncorroborated "eight years of experience" is genuinely
+unverifiable, so staying silent is correct behavior, not a miss. Confirming a fabricated case (Whitmore)
+is impossible without a real lookup; the pipeline only infers it at low confidence.
+
+Reaching 13/13 was never the goal. It would require guessing on the unverifiable items, which would
+sink precision and the hallucination rate. The conservative pipeline holds 100% precision and 0%
+hallucination at roughly 62% keyword recall (69% with the semantic judge).
+
+A note on determinism: gpt-4o is not fully deterministic even at temperature 0, so recall moves by about
+one borderline flaw between runs, the low-confidence fabrication inferences (Whitmore, Kellerman) flip on
+and off. A rigorous eval would average several runs; I report a single run and flag this rather than
+cherry-picking the best one.
 
 ## What I would do with more time
 
@@ -81,5 +96,5 @@ legal-reasoning gaps no current agent looks for); and the uncorroborated "eight 
   grounded verdicts, the single biggest quality lever.
 - Add a sixth agent for legal-reasoning gaps (omitted exceptions and superseded doctrines).
 - Capture page/line locations for each finding so the UI can link back to the source.
-- Calibrate confidence against multiple samples and add prompt-regression tests to CI.
+- Average the eval over several runs to absorb model nondeterminism, and add prompt-regression tests to CI.
 - Expand the ground truth across several cases so the eval numbers mean more.
