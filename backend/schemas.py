@@ -107,5 +107,6 @@ class VerificationReport(BaseModel):
     case: str
     findings: list[Finding] = Field(default_factory=list)
     citations: list[CitationVerdict] = Field(default_factory=list)
+    fact_findings: list[FactFinding] = Field(default_factory=list)
     judicial_memo: str = ""
     errors: list[str] = Field(default_factory=list, description="Agents that failed, for graceful degradation visibility.")

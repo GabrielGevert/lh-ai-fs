@@ -3,7 +3,7 @@ from pathlib import Path
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from agents import authority_verifier, citation_extractor
+from agents import authority_verifier, citation_extractor, fact_checker
 from schemas import VerificationReport
 
 app = FastAPI()
@@ -34,12 +34,13 @@ async def analyze() -> VerificationReport:
     documents = load_documents()
     motion = documents["motion_for_summary_judgment"]
 
-    # Tier 1 pipeline: extract citations, then verify each one.
-    # Fact-checking, scoring, and the judicial memo are wired in later blocks.
+    # Scoring, normalization into findings, and the judicial memo arrive in later blocks.
     citations = citation_extractor.run(motion)
     verdicts = authority_verifier.run(citations)
+    fact_findings = fact_checker.run(documents)
 
     return VerificationReport(
         case=CASE_NAME,
         citations=verdicts,
+        fact_findings=fact_findings,
     )
