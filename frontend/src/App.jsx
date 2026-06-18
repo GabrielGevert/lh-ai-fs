@@ -1,16 +1,23 @@
 import { useState } from 'react'
 
+const HISTORY_KEY = 'bs_detector_history'
 const SEVERITY_ORDER = { high: 0, medium: 1, low: 2 }
 
 const PILL = {
   likely_real: 'green', likely_fabricated: 'red', cannot_verify: 'gray',
   yes: 'green', partial: 'amber', no: 'red',
   accurate: 'green', altered: 'red', not_in_source: 'red', no_quote: 'gray',
+  corroborated: 'green', contradicted: 'red', unsupported: 'amber',
 }
 
 const label = (s) => s.replace(/_/g, ' ')
 const pct = (v) => `${Math.round(v * 100)}%`
-const confColor = (v) => (v >= 0.8 ? 'var(--green)' : v >= 0.5 ? 'var(--medium)' : 'var(--high)')
+const confColor = (v) => (v >= 0.8 ? 'var(--green-text)' : v >= 0.5 ? 'var(--medium)' : 'var(--high)')
+
+const loadHistory = () => {
+  try { return JSON.parse(localStorage.getItem(HISTORY_KEY)) || [] } catch { return [] }
+}
+const persist = (h) => localStorage.setItem(HISTORY_KEY, JSON.stringify(h))
 
 function Pill({ value }) {
   return <span className={`pill ${PILL[value] || 'gray'}`}>{label(value)}</span>
@@ -19,9 +26,7 @@ function Pill({ value }) {
 function Confidence({ value }) {
   return (
     <div className="conf">
-      <div className="conf-track">
-        <div className="conf-fill" style={{ width: pct(value), background: confColor(value) }} />
-      </div>
+      <div className="conf-track"><div className="conf-fill" style={{ width: pct(value), background: confColor(value) }} /></div>
       <span className="conf-pct">{pct(value)}</span>
     </div>
   )
@@ -42,9 +47,7 @@ function FindingCard({ f }) {
       <Confidence value={f.confidence} />
       {f.confidence_reasoning && <div className="reasoning">{f.confidence_reasoning}</div>}
       {f.source_documents?.length > 0 && (
-        <div className="chips">
-          {f.source_documents.map((s) => <span key={s} className="chip">{label(s)}</span>)}
-        </div>
+        <div className="chips">{f.source_documents.map((s) => <span key={s} className="chip">{label(s)}</span>)}</div>
       )}
     </div>
   )
@@ -54,15 +57,118 @@ function Stat({ num, label: l }) {
   return <div className="stat"><div className="stat-num">{num}</div><div className="stat-label">{l}</div></div>
 }
 
+function ReportView({ report }) {
+  const findings = [...report.findings].sort(
+    (a, b) => SEVERITY_ORDER[a.severity] - SEVERITY_ORDER[b.severity] || b.confidence - a.confidence,
+  )
+  const highCount = findings.filter((f) => f.severity === 'high').length
+
+  return (
+    <>
+      <div className="case-line">{report.case}</div>
+
+      <div className="stats">
+        <Stat num={findings.length} label="Findings" />
+        <Stat num={highCount} label="High severity" />
+        <Stat num={report.citations?.length || 0} label="Citations checked" />
+        <Stat num={report.errors?.length || 0} label="Agent errors" />
+      </div>
+
+      {report.errors?.length > 0 && (
+        <div className="banner">
+          <strong>Partial result:</strong> {report.errors.length} agent(s) failed; showing what completed.
+          <ul>{report.errors.map((e, i) => <li key={i}>{e}</li>)}</ul>
+        </div>
+      )}
+
+      {report.judicial_memo && (
+        <div className="section">
+          <h2>Memo for the Judge</h2>
+          <div className="card memo">{report.judicial_memo}</div>
+        </div>
+      )}
+
+      <div className="section">
+        <h2>Findings ({findings.length})</h2>
+        {findings.length === 0
+          ? <p className="hint">No material verification problems found.</p>
+          : findings.map((f) => <FindingCard key={f.id} f={f} />)}
+      </div>
+
+      {report.citations?.length > 0 && (
+        <div className="section">
+          <h2>Citations ({report.citations.length})</h2>
+          <div className="card table-wrap">
+            <table>
+              <thead><tr><th>Citation</th><th>Exists</th><th>Supports</th><th>Quote</th><th>Conf.</th></tr></thead>
+              <tbody>
+                {report.citations.map((c) => (
+                  <tr key={c.citation_id}>
+                    <td className="cite-text">{c.citation_text}</td>
+                    <td><Pill value={c.exists_verdict} /></td>
+                    <td><Pill value={c.supports_proposition} /></td>
+                    <td><Pill value={c.quote_accuracy} /></td>
+                    <td>{pct(c.confidence)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {report.fact_findings?.length > 0 && (
+        <div className="section">
+          <h2>Cross-document fact checks ({report.fact_findings.length})</h2>
+          {report.fact_findings.map((f) => (
+            <div key={f.id} className="fact-item">
+              <div className="fact-head">
+                <Pill value={f.verdict} />
+                <span className="fact-claim">{f.claim_in_motion}</span>
+              </div>
+              <div className="fact-evidence">{f.supporting_evidence}</div>
+              <div className="fact-foot">
+                {f.source_documents?.map((s) => <span key={s} className="chip">{label(s)}</span>)}
+                <span className="conf-pct">{pct(f.confidence)}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </>
+  )
+}
+
+function HistoryView({ history, onOpen, onDelete }) {
+  if (history.length === 0) return <p className="hint">No saved analyses yet. Run an analysis and click "Save".</p>
+  return (
+    <div className="section">
+      {history.map((entry) => (
+        <div key={entry.id} className="history-item">
+          <div>
+            <div className="history-when">{new Date(entry.savedAt).toLocaleString()}</div>
+            <div className="history-meta">{entry.report.case} · {entry.report.findings?.length || 0} findings</div>
+          </div>
+          <div className="history-actions">
+            <button className="btn secondary" onClick={() => onOpen(entry)}>View</button>
+            <button className="icon-btn" title="Delete" onClick={() => onDelete(entry.id)}>Delete</button>
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
 function App() {
   const [report, setReport] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [history, setHistory] = useState(loadHistory)
+  const [showHistory, setShowHistory] = useState(false)
+  const [saved, setSaved] = useState(false)
 
   const runAnalysis = async () => {
-    setLoading(true)
-    setError(null)
-    setReport(null)
+    setLoading(true); setError(null); setReport(null); setSaved(false); setShowHistory(false)
     try {
       const response = await fetch('http://localhost:8002/analyze', { method: 'POST' })
       if (!response.ok) throw new Error(`Server responded with ${response.status}`)
@@ -74,10 +180,20 @@ function App() {
     }
   }
 
-  const findings = report
-    ? [...report.findings].sort((a, b) => SEVERITY_ORDER[a.severity] - SEVERITY_ORDER[b.severity] || b.confidence - a.confidence)
-    : []
-  const highCount = findings.filter((f) => f.severity === 'high').length
+  const saveCurrent = () => {
+    const entry = { id: String(Date.now()), savedAt: new Date().toISOString(), report }
+    const next = [entry, ...history]
+    setHistory(next); persist(next); setSaved(true)
+  }
+
+  const deleteEntry = (id) => {
+    const next = history.filter((e) => e.id !== id)
+    setHistory(next); persist(next)
+  }
+
+  const openEntry = (entry) => {
+    setReport(entry.report); setSaved(true); setShowHistory(false); setError(null)
+  }
 
   return (
     <>
@@ -92,75 +208,29 @@ function App() {
       </header>
 
       <div className="container">
-        <button className="btn" onClick={runAnalysis} disabled={loading}>
-          {loading && <span className="spinner" />}
-          {loading ? 'Analyzing documents...' : 'Run Analysis'}
-        </button>
+        <div className="toolbar">
+          <button className="btn" onClick={runAnalysis} disabled={loading}>
+            {loading && <span className="spinner" />}
+            {loading ? 'Analyzing documents...' : 'Run Analysis'}
+          </button>
+          {report && !showHistory && (
+            saved
+              ? <span className="saved-tag">Saved ✓</span>
+              : <button className="btn secondary" onClick={saveCurrent}>Save analysis</button>
+          )}
+          <button className="btn secondary" onClick={() => setShowHistory((v) => !v)}>
+            {showHistory ? 'Back to analysis' : `Past analyses (${history.length})`}
+          </button>
+        </div>
 
         {error && <div className="error">Error: {error}</div>}
-        {report === null && !loading && !error && (
+        {!showHistory && report === null && !loading && !error && (
           <p className="hint">Click "Run Analysis" to verify the case documents.</p>
         )}
 
-        {report && (
-          <>
-            <div className="case-line">{report.case}</div>
-
-            <div className="stats">
-              <Stat num={findings.length} label="Findings" />
-              <Stat num={highCount} label="High severity" />
-              <Stat num={report.citations?.length || 0} label="Citations checked" />
-              <Stat num={report.errors?.length || 0} label="Agent errors" />
-            </div>
-
-            {report.errors?.length > 0 && (
-              <div className="banner">
-                <strong>Partial result:</strong> {report.errors.length} agent(s) failed; showing what completed.
-                <ul>{report.errors.map((e, i) => <li key={i}>{e}</li>)}</ul>
-              </div>
-            )}
-
-            {report.judicial_memo && (
-              <div className="section">
-                <h2>Memo for the Judge</h2>
-                <div className="card memo">{report.judicial_memo}</div>
-              </div>
-            )}
-
-            <div className="section">
-              <h2>Findings ({findings.length})</h2>
-              {findings.length === 0
-                ? <p className="hint">No material verification problems found.</p>
-                : findings.map((f) => <FindingCard key={f.id} f={f} />)}
-            </div>
-
-            {report.citations?.length > 0 && (
-              <div className="section">
-                <h2>Citations ({report.citations.length})</h2>
-                <div className="card table-wrap">
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>Citation</th><th>Exists</th><th>Supports</th><th>Quote</th><th>Conf.</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {report.citations.map((c) => (
-                        <tr key={c.citation_id}>
-                          <td className="cite-text">{c.citation_text}</td>
-                          <td><Pill value={c.exists_verdict} /></td>
-                          <td><Pill value={c.supports_proposition} /></td>
-                          <td><Pill value={c.quote_accuracy} /></td>
-                          <td>{pct(c.confidence)}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            )}
-          </>
-        )}
+        {showHistory
+          ? <HistoryView history={history} onOpen={openEntry} onDelete={deleteEntry} />
+          : report && <ReportView report={report} />}
       </div>
     </>
   )

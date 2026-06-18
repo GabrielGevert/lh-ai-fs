@@ -56,6 +56,18 @@ body {
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
+.toolbar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.btn.secondary { background: var(--surface); color: var(--ink); border: 1px solid var(--border); }
+.btn.secondary:hover:not(:disabled) { background: #f8fafc; opacity: 1; }
+.saved-tag { color: var(--green-text); font-size: 13px; font-weight: 600; }
+
+.history-item { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 13px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 10px; box-shadow: var(--shadow); }
+.history-when { font-weight: 600; font-size: 14px; }
+.history-meta { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.history-actions { display: flex; gap: 8px; flex-shrink: 0; }
+.icon-btn { background: none; border: 1px solid var(--border); color: var(--muted); border-radius: 7px; padding: 6px 10px; font-size: 13px; cursor: pointer; }
+.icon-btn:hover { background: #f8fafc; color: var(--high-text); }
+
 .hint { color: var(--muted); margin-top: 18px; }
 .error { margin-top: 18px; color: var(--high-text); font-weight: 600; }
 .case-line { color: var(--muted); font-size: 13px; margin: 22px 0 0; }
@@ -107,6 +119,13 @@ body {
 .chip { background: #f8fafc; color: #475569; border: 1px solid var(--border); padding: 2px 8px; border-radius: 6px; font-size: 11px; }
 
 /* Citations table */
+/* Raw fact checks */
+.fact-item { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; margin-bottom: 10px; box-shadow: var(--shadow); }
+.fact-head { display: flex; align-items: baseline; gap: 9px; }
+.fact-claim { font-weight: 600; font-size: 14px; }
+.fact-evidence { font-size: 13px; color: var(--muted); margin-top: 7px; line-height: 1.55; }
+.fact-foot { display: flex; align-items: center; gap: 8px; margin-top: 9px; flex-wrap: wrap; }
+
 .table-wrap { padding: 4px 4px; }
 table { width: 100%; border-collapse: collapse; font-size: 13px; }
 thead th { text-align: left; padding: 10px 12px; color: var(--faint); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; border-bottom: 1px solid var(--border); }
