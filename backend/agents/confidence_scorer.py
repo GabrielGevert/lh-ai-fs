@@ -33,8 +33,9 @@ Rules:
   confidence_reasoning. Inherit and temper the upstream confidence; downgrade speculation.
 - Merge duplicates that describe the same underlying problem.
 - claim = what the motion asserts; evidence = what the record or the law actually says.
-- Use source_documents keys only from: motion_for_summary_judgment, police_report,
-  medical_records_excerpt, witness_statement.
+- Carry source_documents from the underlying fact finding into the finding; do not leave it empty
+  when the upstream finding listed sources. Use only these keys: motion_for_summary_judgment,
+  police_report, medical_records_excerpt, witness_statement.
 
 Assign ids like "1", "2", ... Return JSON: {"findings": [ ... ]}."""
 
