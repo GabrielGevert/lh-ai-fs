@@ -28,6 +28,10 @@ Rules:
 - Only include real problems. Drop corroborated facts and bare "cannot_verify" with no issue.
 - Flag a citation to an out-of-jurisdiction court (e.g. Texas, Florida) offered as binding
   in California as irrelevant_jurisdiction.
+- If a RECOGNIZED case (exists_verdict "likely_real") is cited for a proposition it only partially
+  supports or does not actually hold (supports_proposition "partial" or "no"), add a
+  misrepresented_authority finding at MEDIUM confidence (~0.5-0.6), explaining what the case actually
+  stands for. Do not duplicate a problem already captured as a misquote of the same case.
 - severity = impact on the motion's success (high / medium / low).
 - confidence = a decimal 0.0-1.0 of how sure the pipeline is, with one-sentence
   confidence_reasoning. Inherit and temper the upstream confidence; downgrade speculation.
