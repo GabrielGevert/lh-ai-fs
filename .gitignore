@@ -22,3 +22,6 @@ dist/
 # Plans
 docs/plans/
 PLAN.md
+
+# Eval output
+eval/results.json
