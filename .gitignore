@@ -25,3 +25,6 @@ PLAN.md
 
 # Eval output
 eval/results.json
+
+# Local internal notes
+.internal/
